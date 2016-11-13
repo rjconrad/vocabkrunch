@@ -23,19 +23,21 @@ public class KrunchDBHelper extends SQLiteOpenHelper {
         /* CREATE TABLE krunchword(
                 id INTEGER PRIMARY KEY,
                 ...) */
-        String sql = "CREATE TABLE " + KrunchDBContract.KrunchWord.TABLE_NAME + "("
-                + KrunchDBContract.KrunchWord._ID + " INTEGER PRIMARY KEY, "
-                + KrunchDBContract.KrunchWord.WORD_COLUMN_NAME + " TEXT,"
-                + KrunchDBContract.KrunchWord.CREATED_DATE_COLUMN_NAME + " INT"
-                + KrunchDBContract.KrunchWord.LAST_REVIEWED_DATE_COLUMN_NAME + " INT"
-                + KrunchDBContract.KrunchWord.REVIEWS_COUNT_COLUMN_NAME + " INT,"
-                + KrunchDBContract.KrunchWord.PART_OF_SPEECH_COLUMN_NAME + " INT,"
-                + KrunchDBContract.KrunchWord.LEARNED_COLUMN_NAME + " INT)";
+        String sql = "CREATE TABLE " + KrunchWord.TABLE_NAME + "("
+                + KrunchWord._ID + " INTEGER PRIMARY KEY, "
+                + KrunchWord.WORD_COLUMN_NAME + " TEXT, "
+                + KrunchWord.CREATED_DATE_COLUMN_NAME + " TEXT, "
+                + KrunchWord.LAST_REVIEWED_DATE_COLUMN_NAME + " TEXT, "
+                + KrunchWord.REVIEWS_COUNT_COLUMN_NAME + " INT, "
+                + KrunchWord.PART_OF_SPEECH_COLUMN_NAME + " INT, "
+                + KrunchWord.LEARNED_COLUMN_NAME + " INT)";
 
-
+        db.execSQL(sql);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
-
+        if(oldVersion<2){
+            //upgrade from version 1 to version 2
+        }
     }
 }

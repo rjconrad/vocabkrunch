@@ -15,14 +15,28 @@ public class ListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+
+        //KrunchDBHelper dbHelper = new KrunchDBHelper(this); //Debug code
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        updateList();
     }
 
     /** Called when user clicks the Send button */
-    public void sendMessage(View view){
-        Intent intent = new Intent(this, ReviewWordActivity.class);
-        EditText editText = (EditText) findViewById(R.id.edit_message);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
+    public void addWord(View view){
+        //Intent intent = new Intent(this, ReviewWordActivity.class);
+        //intent.putExtra(EXTRA_MESSAGE, message);
+        //startActivity(intent);
+
+        EditText newWordText = (EditText) findViewById(R.id.edit_message);
+        String newWord = newWordText.getText().toString();
+
+    }
+
+    protected void updateList(){
+        //Call this to update the vocab list
     }
 }
