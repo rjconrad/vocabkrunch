@@ -57,11 +57,12 @@ public class KrunchWord implements BaseColumns {
         SimpleDateFormat ft = new SimpleDateFormat(DATE_FORMAT);
         ContentValues values = new ContentValues();
         values.put(WORD_COLUMN_NAME, word);
-        values.put(CREATED_DATE_COLUMN_NAME, ft.format(createdDate);
+        values.put(CREATED_DATE_COLUMN_NAME, ft.format(createdDate));
         values.put(LAST_REVIEWED_DATE_COLUMN_NAME, ft.format(lastReviewedDate));
         values.put(REVIEWS_COUNT_COLUMN_NAME, reviews);
         values.put(PART_OF_SPEECH_COLUMN_NAME, partOfSpeech);
         values.put(LEARNED_COLUMN_NAME, learned);
+        return values;
     }
 
     public long getId(){

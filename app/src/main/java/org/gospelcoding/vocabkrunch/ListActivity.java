@@ -1,6 +1,7 @@
 package org.gospelcoding.vocabkrunch;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,13 +11,13 @@ import android.widget.EditText;
 
 public class ListActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "org.gospelcoding.vocabkrunch.MESSAGE";
-
+    private KrunchDBHelper dbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        //KrunchDBHelper dbHelper = new KrunchDBHelper(this); //Debug code
+        dbHelper = new KrunchDBHelper(this);
     }
 
     @Override
@@ -33,7 +34,9 @@ public class ListActivity extends AppCompatActivity {
 
         EditText newWordText = (EditText) findViewById(R.id.edit_message);
         String newWord = newWordText.getText().toString();
-
+        KrunchWord kword = new KrunchWord(newWord);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        kword.addToDatabase(db);
     }
 
     protected void updateList(){
