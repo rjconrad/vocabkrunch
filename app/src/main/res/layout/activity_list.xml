@@ -4,17 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <EditText android:id="@+id/edit_message"
-        android:layout_weight="1"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/new_word_prompt" />
-    
-    <Button
-        android:layout_width="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText android:id="@+id/edit_message"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/new_word_prompt" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_add_word"
+            android:onClick="addWord" />
+        </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_add_word"
-        android:onClick="addWord" />
+        android:id="@+id/first_word"
+        android:text="word" />
 </LinearLayout>

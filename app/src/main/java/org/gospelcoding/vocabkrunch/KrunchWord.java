@@ -1,6 +1,7 @@
 package org.gospelcoding.vocabkrunch;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
@@ -51,6 +52,12 @@ public class KrunchWord implements BaseColumns {
             ContentValues values = makeNewContentValues();
             id = db.insert(TABLE_NAME, null, values);
        }
+    }
+
+    public static Cursor getAllKrunchWords(SQLiteDatabase db){
+        String sortOrder = LEARNED_COLUMN_NAME + " ASC, " + _ID + " DESC";
+        Cursor c = db.query(TABLE_NAME, null, null, null, null, null, sortOrder);
+        return c;
     }
 
     private ContentValues makeNewContentValues(){

@@ -1,12 +1,13 @@
 package org.gospelcoding.vocabkrunch;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-
+import android.widget.TextView;
 
 
 public class ListActivity extends AppCompatActivity {
@@ -40,6 +41,11 @@ public class ListActivity extends AppCompatActivity {
     }
 
     protected void updateList(){
-        //Call this to update the vocab list
+        //Delete the existing list
+        Cursor cursor = KrunchWord.getAllKrunchWords(dbHelper.getReadableDatabase());
+        cursor.moveToFirst();
+        String firstWord = cursor.getString(cursor.getColumnIndex(KrunchWord.WORD_COLUMN_NAME));
+        TextView tv = (TextView) findViewById(R.id.first_word);
+        tv.setText(firstWord);
     }
 }

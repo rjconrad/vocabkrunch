@@ -11,7 +11,5 @@ public class KrunchDBContract {
     //Do not instantiate
     private KrunchDBContract(){}
 
-    public static class KrunchWord implements BaseColumns {
 
-    }
 }
