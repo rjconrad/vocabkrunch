@@ -3,4 +3,5 @@
     <string name="new_word_prompt">Nouveau Mot</string>
     <string name="button_add_word">Add Word</string>
     <string name="title_activity_review_word">ReviewWordActivity</string>
+    <string name="learned_check" >Learned</string>
 </resources>

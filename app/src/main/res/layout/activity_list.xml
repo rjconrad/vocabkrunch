@@ -23,9 +23,8 @@
             android:text="@string/button_add_word"
             android:onClick="addWord" />
         </LinearLayout>
-    <TextView
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/first_word"
-        android:text="word" />
+        android:id="@+id/krunch_word_list_view"></ListView>
 </LinearLayout>
