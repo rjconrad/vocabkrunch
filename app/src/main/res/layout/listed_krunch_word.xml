@@ -17,7 +17,8 @@
         android:layout_height="match_parent"
         android:id="@+id/listed_word_learned_check"
         android:paddingRight="10pt"
-        android:text="@string/learned_check"/>
+        android:text="@string/learned_check"
+        android:onClick="setLearned" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

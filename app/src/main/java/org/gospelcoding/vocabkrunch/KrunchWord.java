@@ -60,6 +60,14 @@ public class KrunchWord implements BaseColumns {
         return c;
     }
 
+    public static void updateLearned(SQLiteDatabase db, long id, boolean isLearned){
+        ContentValues values = new ContentValues();
+        values.put(LEARNED_COLUMN_NAME, isLearned);
+        String whereClause = _ID + "=?";
+        String[] whereArgs = {Long.toString(id)};
+        db.update(TABLE_NAME, values, whereClause, whereArgs);
+    }
+
     private ContentValues makeNewContentValues(){
         SimpleDateFormat ft = new SimpleDateFormat(DATE_FORMAT);
         ContentValues values = new ContentValues();
