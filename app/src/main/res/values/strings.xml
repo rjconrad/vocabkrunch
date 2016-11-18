@@ -8,4 +8,6 @@
     <string name="review_done_button">Done</string>
     <string name="another_review_button">Review another word</string>
     <string name="do_review_button">Do a review</string>
+    <string name="notification_title">Vocab Krunch</string>
+    <string name="notification_text">Review one of your words!</string>
 </resources>

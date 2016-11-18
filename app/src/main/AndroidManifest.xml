@@ -20,6 +20,10 @@
         <service
             android:name=".KrunchPromptManagerService"
             android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".KrunchNotificationService"
+            android:enabled="true"
             android:exported="true"></service>
     </application>
 

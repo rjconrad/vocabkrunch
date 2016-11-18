@@ -1,5 +1,7 @@
 package org.gospelcoding.vocabkrunch;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -42,6 +44,8 @@ public class ListActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         krunchList();
+        setAlarmsIfNecessary();
+        //justForFun();
     }
 
     public void addWord(View view){
@@ -93,4 +97,26 @@ public class ListActivity extends AppCompatActivity {
         //krunchList.setOnItemClickListener(itemClickListener);
         krunchList.setAdapter(listViewCursorAdapter);
     }
+
+    private void setAlarmsIfNecessary(){
+        boolean alarmSet = (PendingIntent.getBroadcast(this,
+                KrunchPromptManagerService.REPEATING_ALARM_CODE,
+                new Intent(this, KrunchPromptManagerService.class),
+                PendingIntent.FLAG_NO_CREATE) != null);
+        if(!alarmSet){
+            KrunchPromptManagerService.setTheRepeatingAlarm(this);
+        }
+        justForFun();
+    }
+
+    private void justForFun(){
+        //Intent funTimes = new Intent(this, KrunchPromptManagerService.class);
+        //startService(funTimes);
+        boolean willThisWork = (PendingIntent.getBroadcast(this,
+                75,
+                new Intent(this, KrunchPromptManagerService.class),
+                PendingIntent.FLAG_NO_CREATE) != null);
+        boolean anotherBool = willThisWork;
+    }
+
 }
