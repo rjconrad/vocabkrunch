@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -66,6 +67,72 @@ public class KrunchWord implements BaseColumns {
         String whereClause = _ID + "=?";
         String[] whereArgs = {Long.toString(id)};
         db.update(TABLE_NAME, values, whereClause, whereArgs);
+    }
+
+    public static void updateWordJustReviewed(SQLiteDatabase db, long id, int newNumReviews){
+        ContentValues values = new ContentValues();
+        values.put(LAST_REVIEWED_DATE_COLUMN_NAME, (new SimpleDateFormat(DATE_FORMAT)).format(new Date()));
+        values.put(REVIEWS_COUNT_COLUMN_NAME, newNumReviews);
+        String whereClause = _ID + "=?";
+        String[] whereArgs = {Long.toString(id)};
+        db.update(TABLE_NAME, values, whereClause, whereArgs);
+    }
+
+    /*
+    Formula for weighting: 1 + review_num_factor + last_review_factor
+     review_num_factor =    {  0: 15,
+                              >0: round(10/reviews, 0) }
+     last_review_factor = 2 * (today - last_review)
+
+     */
+    private static int getWeight(Cursor cursor){
+        int weight = 1;
+        try{
+            SimpleDateFormat ft = new SimpleDateFormat(DATE_FORMAT);
+            int numReviews = cursor.getInt(cursor.getColumnIndex(REVIEWS_COUNT_COLUMN_NAME));
+            long lastReview = ft.parse(cursor.getString(cursor.getColumnIndex(LAST_REVIEWED_DATE_COLUMN_NAME))).getTime();  //gets the string lastReview date and converts to millisecond Time
+            int daysSinceReview = new Long((((new Date()).getTime() - lastReview) / (1000*60*60*24))).intValue();
+            if (numReviews == 0)
+                weight += 15;
+            else
+                weight += 10 / numReviews;
+            weight += 2 * daysSinceReview;
+
+        } catch(ParseException e){
+            //I'm pretty sure I didn't mess up...
+        }
+        return weight;
+    }
+
+    private static int getCursorPositionOfRandSelectedKrunchWord(Cursor cursor){
+        int count = cursor.getCount();
+        int[] weights = new int[count];
+        int weightSum = 0;
+        cursor.moveToFirst();
+        for(int i=0; i<count; ++i){
+            weights[i] = getWeight(cursor);
+            weightSum += weights[i];
+            cursor.moveToNext();
+        }
+        int rand = 1 + (int) (Math.random() * weightSum);  //from 1 to weightSum
+        int i = 0;
+        int compareToRand = weights[i];
+        while(rand > compareToRand){
+            ++i;
+            compareToRand += weights[i];
+        }
+        return i;
+    }
+
+    public static String getKrunchWordForReview(KrunchDBHelper dbHelper){
+        SQLiteDatabase readDB = dbHelper.getReadableDatabase();
+        SQLiteDatabase writeDB = dbHelper.getWritableDatabase();
+        String selection = LEARNED_COLUMN_NAME + "=?";
+        String[] selectionArgs = {Integer.toString(LEARNED_FALSE)};
+        Cursor cursor = readDB.query(TABLE_NAME, null, selection, selectionArgs, null, null ,null);
+        cursor.moveToPosition(getCursorPositionOfRandSelectedKrunchWord(cursor));
+        updateWordJustReviewed(writeDB, cursor.getLong(cursor.getColumnIndex(_ID)), 1 + cursor.getInt(cursor.getColumnIndex(REVIEWS_COUNT_COLUMN_NAME)));
+        return cursor.getString(cursor.getColumnIndex(WORD_COLUMN_NAME));
     }
 
     private ContentValues makeNewContentValues(){

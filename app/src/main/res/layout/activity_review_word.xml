@@ -10,4 +10,32 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.gospelcoding.vocabkrunch.ReviewWordActivity">
 
+    <TextView
+        android:id="@+id/review_word_prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/review_prompt"
+        android:textSize="14pt"/>
+    <TextView
+        android:id="@+id/review_kword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/review_word_prompt"
+        android:paddingTop="8pt"
+        android:text="KRUNCH WORD"
+        android:textSize="18pt"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="@string/another_review_button"
+        android:onClick="reviewAnotherWordClick"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/review_done_button"
+        android:onClick="endReviewClick"/>
 </RelativeLayout>

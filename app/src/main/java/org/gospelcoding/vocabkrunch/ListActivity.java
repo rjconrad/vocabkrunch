@@ -36,16 +36,14 @@ public class ListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list);
 
         dbHelper = new KrunchDBHelper(this);
-        krunchList();
     }
 
     @Override
     protected void onResume(){
         super.onResume();
-        //updateList();
+        krunchList();
     }
 
-    /** Called when user clicks the Send button */
     public void addWord(View view){
         //Intent intent = new Intent(this, ReviewWordActivity.class);
         //intent.putExtra(EXTRA_MESSAGE, message);
@@ -58,6 +56,11 @@ public class ListActivity extends AppCompatActivity {
         kword.addToDatabase(db);
         krunchList();
         newWordText.setText("");
+    }
+
+    public void doAReviewClick(View v){
+        Intent intent = new Intent(this, ReviewWordActivity.class);
+        startActivity(intent);
     }
 
     public void setLearned(View v){

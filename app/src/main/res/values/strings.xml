@@ -4,4 +4,8 @@
     <string name="button_add_word">Add Word</string>
     <string name="title_activity_review_word">ReviewWordActivity</string>
     <string name="learned_check" >Learned</string>
+    <string name="review_prompt">Fais une phrase avec:</string>
+    <string name="review_done_button">Done</string>
+    <string name="another_review_button">Review another word</string>
+    <string name="do_review_button">Do a review</string>
 </resources>
