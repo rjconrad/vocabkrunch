@@ -15,11 +15,12 @@ public class KrunchNotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        int alarmNumber = intent.getIntExtra(KrunchPromptManagerService.CURRENT_ALARM_TAG, 0);
+        KrunchPromptManagerService.logAlarmRang(KrunchPromptManagerService.LOG_ONE_TIME);
+        int alarmNumber = intent.getIntExtra(KrunchPromptManagerService.CURRENT_ALARM_TAG, 1);
         postNotification();
         KrunchPromptManagerService.setTheNextOneTimeAlarm(this, alarmNumber);
         stopSelf();
-        return START_REDELIVER_INTENT; //maybe?
+        return START_NOT_STICKY; //maybe?
     }
     @Override
     public IBinder onBind(Intent intent) {

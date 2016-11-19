@@ -100,23 +100,24 @@ public class ListActivity extends AppCompatActivity {
 
     private void setAlarmsIfNecessary(){
         boolean alarmSet = (PendingIntent.getBroadcast(this,
-                KrunchPromptManagerService.REPEATING_ALARM_CODE,
+                0,
                 new Intent(this, KrunchPromptManagerService.class),
                 PendingIntent.FLAG_NO_CREATE) != null);
         if(!alarmSet){
             KrunchPromptManagerService.setTheRepeatingAlarm(this);
         }
-        justForFun();
+        //justForFun();
     }
 
     private void justForFun(){
         //Intent funTimes = new Intent(this, KrunchPromptManagerService.class);
         //startService(funTimes);
-        boolean willThisWork = (PendingIntent.getBroadcast(this,
-                75,
-                new Intent(this, KrunchPromptManagerService.class),
-                PendingIntent.FLAG_NO_CREATE) != null);
-        boolean anotherBool = willThisWork;
+
+        //boolean willThisWork = (PendingIntent.getBroadcast(this,
+        //        75,
+        //        new Intent(this, KrunchPromptManagerService.class),
+        //        PendingIntent.FLAG_NO_CREATE) != null);
+        //boolean anotherBool = willThisWork;
     }
 
 }
