@@ -101,17 +101,15 @@ public class ListActivity extends AppCompatActivity {
     private void setAlarmsIfNecessary(){
         boolean alarmSet = (PendingIntent.getBroadcast(this,
                 0,
-                new Intent(this, KrunchPromptManagerService.class),
+                new Intent(this, KrunchAlarmReceiver.class),
                 PendingIntent.FLAG_NO_CREATE) != null);
         if(!alarmSet){
-            KrunchPromptManagerService.setTheRepeatingAlarm(this);
+            KrunchAlarmReceiver.setTheRepeatingAlarm(this);
         }
         //justForFun();
     }
 
     private void justForFun(){
-        //Intent funTimes = new Intent(this, KrunchPromptManagerService.class);
-        //startService(funTimes);
 
         //boolean willThisWork = (PendingIntent.getBroadcast(this,
         //        75,
