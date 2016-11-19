@@ -75,6 +75,7 @@ public class KrunchPromptManagerService extends Service {
                 setOneTimeAlarmToo = true;
         }
         calendar.set(Calendar.HOUR_OF_DAY, OPENING_TIME);
+        calendar.set(Calendar.MINUTE, 0);
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, alarmIntent);
         logAlarmSet(calendar.getTimeInMillis(), LOG_REPEATING);
@@ -89,6 +90,7 @@ public class KrunchPromptManagerService extends Service {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, CLOSING_TIME);
+        calendar.set(Calendar.MINUTE, 0);
         long diff = calendar.getTimeInMillis() - System.currentTimeMillis();
         long fromNow = diff / (alarmsToGo + 1);
         return System.currentTimeMillis() + fromNow;
