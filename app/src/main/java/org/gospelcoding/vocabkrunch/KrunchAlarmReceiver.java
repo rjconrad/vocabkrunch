@@ -33,8 +33,7 @@ public class KrunchAlarmReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         if(action.contentEquals(REPEATING_ALARM_CODE)){
             logAlarmRang(LOG_REPEATING);
-            setTheNextOneTimeAlarm(context, 1);
-            postNotification(context);
+            setTheNextOneTimeAlarmIfNecessary(context);
         }
         else{
             logAlarmRang(LOG_ONE_TIME);
@@ -45,18 +44,31 @@ public class KrunchAlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    //do not call with alarmsDoneToday=0 or >=ALARMS_PER_DAY
+    public static void setTheNextOneTimeAlarmIfNecessary(Context context){
+        boolean alarmSet = (PendingIntent.getBroadcast(context,
+                0,
+                new Intent(context, KrunchAlarmReceiver.class).setAction(KrunchAlarmReceiver.ONE_TIME_ALARM_CODE),
+                PendingIntent.FLAG_NO_CREATE) != null);
+        if(!alarmSet){
+            setTheNextOneTimeAlarm(context, 1);
+        }
+    }
+
     public static void setTheNextOneTimeAlarm(Context context, int alarmsDoneToday) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        if (alarmsDoneToday < 1 || alarmsDoneToday >= ALARMS_PER_DAY || calendar.get(Calendar.HOUR_OF_DAY) > CLOSING_TIME)
-            return;
-        long timeOfNextAlarm = calculateTimeOfNextAlarm(alarmsDoneToday);
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, KrunchAlarmReceiver.class);
         intent.setAction(ONE_TIME_ALARM_CODE);
-        intent.putExtra(CURRENT_ALARM_TAG, alarmsDoneToday + 1);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        Calendar calendar = getRightNow();
+        long timeOfNextAlarm;
+        if (calendar.get(Calendar.HOUR_OF_DAY) > CLOSING_TIME || alarmsDoneToday>=ALARMS_PER_DAY) {
+            timeOfNextAlarm = getNextOpeningTime().getTimeInMillis();
+            intent.putExtra(CURRENT_ALARM_TAG, 1);
+        }
+        else {
+            timeOfNextAlarm = calculateTimeOfNextAlarm(alarmsDoneToday);
+            intent.putExtra(CURRENT_ALARM_TAG, alarmsDoneToday + 1);
+        }
         alarmMgr.set(AlarmManager.RTC_WAKEUP, timeOfNextAlarm, alarmIntent);
         logAlarmSet(timeOfNextAlarm, LOG_ONE_TIME);
     }
@@ -66,47 +78,58 @@ public class KrunchAlarmReceiver extends BroadcastReceiver {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, KrunchAlarmReceiver.class);
         intent.setAction(REPEATING_ALARM_CODE);
-        //intent.putExtra(CURRENT_ALARM_TAG, 1);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
-        // Set the alarm to start at approximately 7am
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        if (calendar.get(Calendar.HOUR_OF_DAY) > OPENING_TIME) {
-            calendar.add(Calendar.DATE, 1);
-            if (calendar.get(Calendar.HOUR_OF_DAY) < CLOSING_TIME)
-                setOneTimeAlarmToo = true;
-        }
-        calendar.set(Calendar.HOUR_OF_DAY, OPENING_TIME);
-        calendar.set(Calendar.MINUTE, 0);
-        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+        //DEBUG
+        //calendar.setTimeInMillis(System.currentTimeMillis()+6000);
+
+        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
                 AlarmManager.INTERVAL_DAY, alarmIntent);
-        logAlarmSet(calendar.getTimeInMillis(), LOG_REPEATING);
+
+        logAlarmSet(System.currentTimeMillis(), LOG_REPEATING);
         if (setOneTimeAlarmToo)
             setTheNextOneTimeAlarm(context, 1);
     }
 
-    //do not call with alarmsDoneToday=0 or >=ALARMS_PER_DAY
+    //do not call with alarmsDoneToday>=ALARMS_PER_DAY
     //do not call after CLOSING_TIME
     private static long calculateTimeOfNextAlarm(int alarmsDoneToday) {
         int alarmsToGo = ALARMS_PER_DAY - alarmsDoneToday;
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
+        Calendar calendar = getRightNow();
         calendar.set(Calendar.HOUR_OF_DAY, CLOSING_TIME);
         calendar.set(Calendar.MINUTE, 0);
         long diff = calendar.getTimeInMillis() - System.currentTimeMillis();
         long fromNow = diff / (alarmsToGo + 1);
 
         //DEBUG
-        SimpleDateFormat ft = new SimpleDateFormat("HH:mm MM-dd-yy");
-        Log.d(LOG_TAG, "alarmsToGo="+Integer.toString(alarmsToGo));
-        Log.d(LOG_TAG, "Closing Time = " + ft.format(new Date(calendar.getTimeInMillis())));
-        Log.d(LOG_TAG, "Right now is " + ft.format(new Date()));
-        Log.d(LOG_TAG, "diff is " + Long.toString(diff/1000/60) + " min");
-        Log.d(LOG_TAG, "fromNow is " + Long.toString(fromNow/1000/60) + " min");
+        //SimpleDateFormat ft = new SimpleDateFormat("HH:mm MM-dd-yy");
+        //Log.d(LOG_TAG, "alarmsToGo="+Integer.toString(alarmsToGo));
+        //Log.d(LOG_TAG, "Closing Time = " + ft.format(new Date(calendar.getTimeInMillis())));
+        //Log.d(LOG_TAG, "Right now is " + ft.format(new Date()));
+        //Log.d(LOG_TAG, "diff is " + Long.toString(diff/1000/60) + " min");
+        //Log.d(LOG_TAG, "fromNow is " + Long.toString(fromNow/1000/60) + " min");
 
 
         return System.currentTimeMillis() + fromNow;
+
+        //DEBUG
+        //return System.currentTimeMillis() + (1000*60*3);
+    }
+
+    private static Calendar getNextOpeningTime(){
+        Calendar c = getRightNow();
+        if (c.get(Calendar.HOUR_OF_DAY) > OPENING_TIME) {
+            c.add(Calendar.DATE, 1);
+        }
+        c.set(Calendar.HOUR_OF_DAY, OPENING_TIME);
+        c.set(Calendar.MINUTE, 0);
+        return c;
+    }
+
+    private static Calendar getRightNow(){
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(System.currentTimeMillis());
+        return c;
     }
 
     public static void logAlarmSet(long time, int type){

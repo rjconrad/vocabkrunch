@@ -1,7 +1,9 @@
 package org.gospelcoding.vocabkrunch;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -44,6 +46,7 @@ public class ListActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         krunchList();
+        //justForFun();
         setAlarmsIfNecessary();
         //justForFun();
     }
@@ -101,21 +104,26 @@ public class ListActivity extends AppCompatActivity {
     private void setAlarmsIfNecessary(){
         boolean alarmSet = (PendingIntent.getBroadcast(this,
                 0,
-                new Intent(this, KrunchAlarmReceiver.class),
+                new Intent(this, KrunchAlarmReceiver.class).setAction(KrunchAlarmReceiver.REPEATING_ALARM_CODE),
                 PendingIntent.FLAG_NO_CREATE) != null);
         if(!alarmSet){
             KrunchAlarmReceiver.setTheRepeatingAlarm(this);
         }
-        //justForFun();
+        else
+            KrunchAlarmReceiver.setTheRepeatingAlarm(this);
     }
 
     private void justForFun(){
+        AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmMgr.cancel(PendingIntent.getBroadcast(this,
+                0,
+                new Intent(this, KrunchAlarmReceiver.class).setAction(KrunchAlarmReceiver.REPEATING_ALARM_CODE),
+                0));
 
-        //boolean willThisWork = (PendingIntent.getBroadcast(this,
-        //        75,
-        //        new Intent(this, KrunchPromptManagerService.class),
-        //        PendingIntent.FLAG_NO_CREATE) != null);
-        //boolean anotherBool = willThisWork;
+        alarmMgr.cancel(PendingIntent.getBroadcast(this,
+                0,
+                new Intent(this, KrunchAlarmReceiver.class).setAction(KrunchAlarmReceiver.ONE_TIME_ALARM_CODE),
+                0));
     }
 
 }

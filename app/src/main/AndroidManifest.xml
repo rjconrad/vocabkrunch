@@ -17,11 +17,6 @@
         </activity>
         <activity android:name=".ReviewWordActivity" />
 
-        <service
-            android:name=".KrunchPromptManagerService"
-            android:enabled="true"
-            android:exported="true" />
-
         <receiver
             android:name=".KrunchAlarmReceiver"
             android:enabled="true"
