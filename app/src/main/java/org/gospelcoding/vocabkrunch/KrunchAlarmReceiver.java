@@ -17,7 +17,7 @@ import java.util.Date;
 public class KrunchAlarmReceiver extends BroadcastReceiver {
     public static final String REPEATING_ALARM_CODE = "org.gospelcoding.vocabkrunch.repeating_alarm";
     public static final String ONE_TIME_ALARM_CODE = "org.gospelcoding.vocabkrunch.one_time_alarm";
-    public static final int ALARMS_PER_DAY = 4;
+    public static final int ALARMS_PER_DAY = 5;
     public static final int OPENING_TIME = 7;
     public static final int CLOSING_TIME = 20;  //8pm
     public static final String CURRENT_ALARM_TAG = "org.gospelcoding.vocabkrunch.current_alarm";
@@ -38,9 +38,9 @@ public class KrunchAlarmReceiver extends BroadcastReceiver {
         else{
             logAlarmRang(LOG_ONE_TIME);
             int alarmNumber = intent.getIntExtra(CURRENT_ALARM_TAG, 1);
-            if(alarmNumber<ALARMS_PER_DAY)
-                setTheNextOneTimeAlarm(context, alarmNumber);
-            postNotification(context);
+            //if(alarmNumber<ALARMS_PER_DAY)
+            setTheNextOneTimeAlarm(context, alarmNumber);
+            postNotification(context, alarmNumber);
         }
     }
 
@@ -58,10 +58,11 @@ public class KrunchAlarmReceiver extends BroadcastReceiver {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, KrunchAlarmReceiver.class);
         intent.setAction(ONE_TIME_ALARM_CODE);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
         Calendar calendar = getRightNow();
         long timeOfNextAlarm;
-        if (calendar.get(Calendar.HOUR_OF_DAY) > CLOSING_TIME || alarmsDoneToday>=ALARMS_PER_DAY) {
+        if (calendar.get(Calendar.HOUR_OF_DAY) < OPENING_TIME ||
+                calendar.get(Calendar.HOUR_OF_DAY) >= CLOSING_TIME ||
+                alarmsDoneToday>=ALARMS_PER_DAY) {
             timeOfNextAlarm = getNextOpeningTime().getTimeInMillis();
             intent.putExtra(CURRENT_ALARM_TAG, 1);
         }
@@ -69,12 +70,13 @@ public class KrunchAlarmReceiver extends BroadcastReceiver {
             timeOfNextAlarm = calculateTimeOfNextAlarm(alarmsDoneToday);
             intent.putExtra(CURRENT_ALARM_TAG, alarmsDoneToday + 1);
         }
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
         alarmMgr.set(AlarmManager.RTC_WAKEUP, timeOfNextAlarm, alarmIntent);
         logAlarmSet(timeOfNextAlarm, LOG_ONE_TIME);
     }
 
     public static void setTheRepeatingAlarm(Context context) {
-        boolean setOneTimeAlarmToo = false;
+        //boolean setOneTimeAlarmToo = false;
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, KrunchAlarmReceiver.class);
         intent.setAction(REPEATING_ALARM_CODE);
@@ -87,8 +89,8 @@ public class KrunchAlarmReceiver extends BroadcastReceiver {
                 AlarmManager.INTERVAL_DAY, alarmIntent);
 
         logAlarmSet(System.currentTimeMillis(), LOG_REPEATING);
-        if (setOneTimeAlarmToo)
-            setTheNextOneTimeAlarm(context, 1);
+        //if (setOneTimeAlarmToo)
+        //    setTheNextOneTimeAlarm(context, 1);
     }
 
     //do not call with alarmsDoneToday>=ALARMS_PER_DAY
@@ -102,12 +104,12 @@ public class KrunchAlarmReceiver extends BroadcastReceiver {
         long fromNow = diff / (alarmsToGo + 1);
 
         //DEBUG
-        //SimpleDateFormat ft = new SimpleDateFormat("HH:mm MM-dd-yy");
-        //Log.d(LOG_TAG, "alarmsToGo="+Integer.toString(alarmsToGo));
-        //Log.d(LOG_TAG, "Closing Time = " + ft.format(new Date(calendar.getTimeInMillis())));
-        //Log.d(LOG_TAG, "Right now is " + ft.format(new Date()));
-        //Log.d(LOG_TAG, "diff is " + Long.toString(diff/1000/60) + " min");
-        //Log.d(LOG_TAG, "fromNow is " + Long.toString(fromNow/1000/60) + " min");
+        SimpleDateFormat ft = new SimpleDateFormat("HH:mm MM-dd-yy");
+        Log.d(LOG_TAG, "alarmsToGo="+Integer.toString(alarmsToGo));
+        Log.d(LOG_TAG, "Closing Time = " + ft.format(new Date(calendar.getTimeInMillis())));
+        Log.d(LOG_TAG, "Right now is " + ft.format(new Date()));
+        Log.d(LOG_TAG, "diff is " + Long.toString(diff/1000/60) + " min");
+        Log.d(LOG_TAG, "fromNow is " + Long.toString(fromNow/1000/60) + " min");
 
 
         return System.currentTimeMillis() + fromNow;
@@ -152,11 +154,11 @@ public class KrunchAlarmReceiver extends BroadcastReceiver {
         Log.d(LOG_TAG, log);
     }
 
-    private void postNotification(Context context){
+    private void postNotification(Context context ,int alarmNumber){
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentTitle(context.getString(R.string.notification_title));
-        builder.setContentText(context.getString(R.string.notification_text));
+        builder.setContentText(Integer.toString(alarmNumber) + " - " + context.getString(R.string.notification_text));
         builder.setAutoCancel(true);
 
         Intent resultIntent = new Intent(context, ReviewWordActivity.class);
